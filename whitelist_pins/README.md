@@ -4,13 +4,18 @@ GrapheneOS [Vanadium](https://github.com/GrapheneOS/Vanadium) does not ship user
 
 ## Behaviour
 
+Global (all hosts), before whitelist pins:
+
+0. **China-related CA denylist** — if any chain SPKI matches Mozilla-scanned China-related roots, deny  
+   (`denylist/china-related-cas.json`, patch `0290`)
+
 For each host in `policy.json`:
 
 1. Chromium/Vanadium default certificate verification must still pass
 2. Presented **leaf SPKI** must be in `leafSpkiSha256` (backup pins allowed)
 3. Some **non-leaf** chain SPKI must be in `intermediateSpkiSha256`
 4. (2) and (3) are **AND** — both required
-5. Hosts not listed are unaffected
+5. Hosts not listed are unaffected (except denylist above)
 
 This hooks `net/socket/ssl_client_socket_impl.cc` (same place Chromium runs HPKP/static PKP checks).
 

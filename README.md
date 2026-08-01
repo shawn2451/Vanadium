@@ -15,3 +15,4 @@ our usage guide](https://grapheneos.org/usage#web-browsing) for more information
 Branch `feat/whitelist-cert-pinning` adds optional **leaf + intermediate SPKI pinning (AND)** for configured hosts.
 
 See [`whitelist_pins/README.md`](whitelist_pins/README.md) and patch `patches/0289-Add-whitelist-leaf-and-intermediate-certificate-pinning.patch`.
+Also includes a **China-related CA denylist** (Mozilla CCADB scan): patch `0290`, data in [`denylist/`](denylist/).
