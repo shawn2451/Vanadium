@@ -1,0 +1,15 @@
+{
+  "$comment": "Vanadium whitelist pin policy. leafSpkiSha256 and intermediateSpkiSha256 use Chromium HashValue form sha256/<base64>. Enforcement is AND for listed hosts. Unlisted hosts are unchanged.",
+  "hosts": [
+    {
+      "name": "example.com",
+      "include_subdomains": true,
+      "leafSpkiSha256": [
+        "sha256/CFZ1L1MZmmc9zJVcE3/h9bEFoYBSissyC7Pt3xUQOps="
+      ],
+      "intermediateSpkiSha256": [
+        "sha256/44viFzTC+h/L+3OHRg4Rs5v4+AcpzHZvI9Tne2RDNGk="
+      ]
+    }
+  ]
+}

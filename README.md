@@ -8,3 +8,10 @@ breakage on other operating systems due to the ability to fix compatibility prob
 See [the official build documentation](https://grapheneos.org/build#browser-and-webview) for build
 instructions. See the [Vanadium section of our GrapheneOS features overview](https://grapheneos.org/features#vanadium) and the [web browsing section of 
 our usage guide](https://grapheneos.org/usage#web-browsing) for more information about Vanadium.
+
+
+## Downstream: whitelist certificate pinning
+
+Branch `feat/whitelist-cert-pinning` adds optional **leaf + intermediate SPKI pinning (AND)** for configured hosts.
+
+See [`whitelist_pins/README.md`](whitelist_pins/README.md) and patch `patches/0289-Add-whitelist-leaf-and-intermediate-certificate-pinning.patch`.
