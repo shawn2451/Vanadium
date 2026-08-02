@@ -1,0 +1,184 @@
+{
+  "id": "china-related-cas",
+  "title": "China-related CAs (Mozilla Included roots)",
+  "generated_at": "2026-08-01T18:09:08.448Z",
+  "source": "https://ccadb.my.salesforce-sites.com/mozilla/IncludedCACertificateReportPEMCSV",
+  "selection_rule": "Geographic Focus contains China OR owner/org matches known PRC/HK CA operators in Mozilla Included list",
+  "notes": [
+    "Scanned from Mozilla CCADB Included CA Certificate Report — currently trusted roots, not C=XX heuristics.",
+    "Hongkong Post included because Geographic Focus is Hong Kong (SAR), China.",
+    "Match any chain cert SHA-256 or SPKI SHA-256 against this list to deny."
+  ],
+  "enabled_by_default": true,
+  "match": [
+    "cert_sha256",
+    "spki_sha256"
+  ],
+  "roots": [
+    {
+      "common_name": "BJCA Global Root CA1",
+      "owner": "BEIJING CERTIFICATE AUTHORITY Co., Ltd.",
+      "organization": "BEIJING CERTIFICATE AUTHORITY",
+      "geographic_focus": "China",
+      "trust_bits": "Websites",
+      "cert_sha256": "f3896f88fe7c0a882766a7fa6ad2749fb57a7f3e98fb769c1fa7b09c2c44d5ae",
+      "spki_sha256": "ebc55f21e88d49ede81c0075ab08b3c73b81f0f33e37d7641a1d01b6e602dc9d",
+      "company_website": "https://www.bjca.cn",
+      "test_website_valid": "https://demossl-rsa-valid.bjca.org.cn"
+    },
+    {
+      "common_name": "BJCA Global Root CA2",
+      "owner": "BEIJING CERTIFICATE AUTHORITY Co., Ltd.",
+      "organization": "BEIJING CERTIFICATE AUTHORITY",
+      "geographic_focus": "China",
+      "trust_bits": "Websites",
+      "cert_sha256": "574df6931e278039667b720afdc1600fc27eb66dd3092979fb73856487212882",
+      "spki_sha256": "cc94a5a0319ff77a4ccadd821c4c59674e44d52816cbd1dfe2c761370ad4d21c",
+      "company_website": "https://www.bjca.cn",
+      "test_website_valid": "https://demossl-ecc-valid.bjca.org.cn"
+    },
+    {
+      "common_name": "CFCA EV ROOT",
+      "owner": "China Financial Certification Authority (CFCA)",
+      "organization": "China Financial Certification Authority",
+      "geographic_focus": "China",
+      "trust_bits": "Websites",
+      "cert_sha256": "5cc3d78e4e1d5e45547a04e6873e64f90cf9536d1ccc2ef800f355c4c5fd70fd",
+      "spki_sha256": "dd5ed1c090f9f448061baa94a6bb11017544e9eefaa20cc714ce6c633f5dc629",
+      "company_website": "http://www.cfca.com.cn/",
+      "test_website_valid": "https://www.anxinsign.com/Web/login"
+    },
+    {
+      "common_name": "GDCA TrustAUTH R5 ROOT",
+      "owner": "Global Digital Cybersecurity Authority Co., Ltd. (Formerly Guang Dong Certificate Authority (GDCA))",
+      "organization": "GUANG DONG CERTIFICATE AUTHORITY CO.,LTD.",
+      "geographic_focus": "China",
+      "trust_bits": "Websites",
+      "cert_sha256": "bfff8fd04433487d6a8aa60c1a29767a9fc2bbb05e420f713a13b992891d3893",
+      "spki_sha256": "ceb19411c65052c757f941eb826c96941e4d08d096c7db7e7ea3c4f8c13f1a13",
+      "company_website": "http://www.gdca.com.cn/",
+      "test_website_valid": "https://ev-ssl-test-1.95105813.cn/"
+    },
+    {
+      "common_name": "Hongkong Post Root CA 3",
+      "owner": "Government of Hong Kong (SAR), Hongkong Post, Certizen",
+      "organization": "Hongkong Post",
+      "geographic_focus": "Hong Kong (SAR), China",
+      "trust_bits": "Websites",
+      "cert_sha256": "5a2fc03f0c83b090bbfa40604b0988446c7636183df9846e17101a447fb8efd6",
+      "spki_sha256": "2541e53ba5b3b07acbe7097ac4a03e040c11cf7a6d4a67cb213d558b50167a06",
+      "company_website": "https://www.ecert.gov.hk/index.html",
+      "test_website_valid": "https://valid-ev.ecert.gov.hk/"
+    },
+    {
+      "common_name": "vTrus ECC Root CA",
+      "owner": "iTrusChina Co., Ltd.",
+      "organization": "iTrusChina Co.,Ltd.",
+      "geographic_focus": "China",
+      "trust_bits": "Websites",
+      "cert_sha256": "30fbba2c32238e2a98547af97931e550428b9b3f1c8eeb6633dcfa86c5b27dd3",
+      "spki_sha256": "a246b822f96cfecc155156e5476957845492acf32187ec8a2ef12d89618d711d",
+      "company_website": "https://www.itrus.com.cn/",
+      "test_website_valid": "https://eccevtest.itrus.cn/"
+    },
+    {
+      "common_name": "vTrus Root CA",
+      "owner": "iTrusChina Co., Ltd.",
+      "organization": "iTrusChina Co.,Ltd.",
+      "geographic_focus": "China",
+      "trust_bits": "Websites",
+      "cert_sha256": "8a71de6559336f426c26e53880d00d88a18da4c6a91f0dcb6194e206c5c96387",
+      "spki_sha256": "e06647e52610160c3e83c42d22e39aa8750c584d6c24afaed54a61164742000a",
+      "company_website": "https://www.itrus.com.cn/",
+      "test_website_valid": "https://evtest.itrus.cn/"
+    },
+    {
+      "common_name": "UCA Extended Validation Root",
+      "owner": "Shanghai Electronic Certification Authority Co., Ltd.",
+      "organization": "UniTrust",
+      "geographic_focus": "China",
+      "trust_bits": "Websites",
+      "cert_sha256": "d43af9b35473755c9684fc06d7d8cb70ee5c28e773fb294eb41ee71722924d24",
+      "spki_sha256": "5c41a73ab2c35dfcd771f6fd6e3e8fac9b469d386cadda56a95b646eb48cca34",
+      "company_website": "https://www.sheca.com/repository",
+      "test_website_valid": "https://rsaevg3.good.sheca.com/"
+    },
+    {
+      "common_name": "UCA Global G2 Root",
+      "owner": "Shanghai Electronic Certification Authority Co., Ltd.",
+      "organization": "UniTrust",
+      "geographic_focus": "China",
+      "trust_bits": "Websites;Email",
+      "cert_sha256": "9bea11c976fe014764c1be56a6f914b5a560317abd9988393382e5161aa0493c",
+      "spki_sha256": "1255cabe8152fa64df942f7a47417e29f96c1ce11bf8c84ecbe2815cc1280810",
+      "company_website": "https://www.sheca.com/repository",
+      "test_website_valid": "https://rsaovg5.good.sheca.com/"
+    },
+    {
+      "common_name": "TrustAsia Global Root CA G3",
+      "owner": "TrustAsia Technologies, Inc.",
+      "organization": "TrustAsia Technologies, Inc.",
+      "geographic_focus": "China, Global",
+      "trust_bits": "Websites",
+      "cert_sha256": "e0d3226aeb1163c2e48ff9be3b50b4c6431be7bb1eacc5c36b5d5ec509039a08",
+      "spki_sha256": "8685ad850f7f56cd16943bcb70b434e7356e1b8bdc613406e2ea8de46092b636",
+      "company_website": "https://www.trustasia.com/",
+      "test_website_valid": "https://ev-rsag3-valid.trustasia.com"
+    },
+    {
+      "common_name": "TrustAsia Global Root CA G4",
+      "owner": "TrustAsia Technologies, Inc.",
+      "organization": "TrustAsia Technologies, Inc.",
+      "geographic_focus": "China, Global",
+      "trust_bits": "Websites",
+      "cert_sha256": "be4b56cb5056c0136a526df444508daa36a0b54f42e4ac38f72af470e479654c",
+      "spki_sha256": "07a2904d4bff9604ea1331ae990e9ffe331232e69ecb8a08cd49d8e34757db41",
+      "company_website": "https://www.trustasia.com/",
+      "test_website_valid": "https://ev-eccg4-valid.trustasia.com"
+    },
+    {
+      "common_name": "TrustAsia SMIME ECC Root CA",
+      "owner": "TrustAsia Technologies, Inc.",
+      "organization": "TrustAsia Technologies, Inc.",
+      "geographic_focus": "China, Global",
+      "trust_bits": "Email",
+      "cert_sha256": "436472c1009a325c54f1a5bbb5468a7baeeccbe05de5f099cb70d3fe41e13c16",
+      "spki_sha256": "74d34ebb2d1a9e9390fea49ea9f8056c8d8e15d117b652f3c1c860856af2b328",
+      "company_website": "https://www.trustasia.com/",
+      "test_website_valid": ""
+    },
+    {
+      "common_name": "TrustAsia SMIME RSA Root CA",
+      "owner": "TrustAsia Technologies, Inc.",
+      "organization": "TrustAsia Technologies, Inc.",
+      "geographic_focus": "China, Global",
+      "trust_bits": "Email",
+      "cert_sha256": "c7796beb62c101bb143d262a7c96a0c6168183223ef50d699632d86e03b8cc9b",
+      "spki_sha256": "cb46eb71247e6a463ee57c56ef148c64f537a898294828fdcc66183266e08aca",
+      "company_website": "https://www.trustasia.com/",
+      "test_website_valid": ""
+    },
+    {
+      "common_name": "TrustAsia TLS ECC Root CA",
+      "owner": "TrustAsia Technologies, Inc.",
+      "organization": "TrustAsia Technologies, Inc.",
+      "geographic_focus": "China, Global",
+      "trust_bits": "Websites",
+      "cert_sha256": "c0076b9ef0531fb1a656d67c4ebe97cd5dbaa41ef44598acc2489878c92d8711",
+      "spki_sha256": "f4632e58701c0bd7dafc7e3831355ec433fc13777de286683e8ec50964df0452",
+      "company_website": "https://www.trustasia.com/",
+      "test_website_valid": "https://ev-ecctls-valid.trustasia.com"
+    },
+    {
+      "common_name": "TrustAsia TLS RSA Root CA",
+      "owner": "TrustAsia Technologies, Inc.",
+      "organization": "TrustAsia Technologies, Inc.",
+      "geographic_focus": "China, Global",
+      "trust_bits": "Websites",
+      "cert_sha256": "06c08d7dafd876971eb1124fe67f847ec0c7a158d3ea53cbe940e2ea9791f4c3",
+      "spki_sha256": "5628872e245fe66148b80badeac9c40f6252e642fa9595aece4b3e8a58b8fd46",
+      "company_website": "https://www.trustasia.com/",
+      "test_website_valid": "https://ev-rsatls-valid.trustasia.com"
+    }
+  ]
+}

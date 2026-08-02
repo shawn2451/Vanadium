@@ -1,0 +1,85 @@
+{
+  "id": "spain-related-cas",
+  "title": "Spain-related CAs (Mozilla Included roots)",
+  "generated_at": "2026-08-02T06:01:00.000Z",
+  "source": "https://ccadb.my.salesforce-sites.com/mozilla/IncludedCACertificateReportPEMCSV",
+  "selection_rule": "Geographic Focus matches Spain / Basque / Valencia OR Spanish government CA operators (FNMT, ACCV, ANF, Firmaprofesional, Izenpe)",
+  "notes": [
+    "Scanned from Mozilla CCADB Included CA Certificate Report — currently trusted roots.",
+    "Includes FNMT-RCM, ACCV, ANF, Firmaprofesional, and Izenpe.",
+    "Match any chain cert SHA-256 or SPKI SHA-256 against this list to deny."
+  ],
+  "enabled_by_default": true,
+  "match": [
+    "cert_sha256",
+    "spki_sha256"
+  ],
+  "roots": [
+    {
+      "common_name": "Autoridad de Certificacion Firmaprofesional CIF A62634068",
+      "owner": "Autoridad de Certificacion Firmaprofesional",
+      "organization": "",
+      "geographic_focus": "Spain",
+      "trust_bits": "Websites",
+      "cert_sha256": "57de0583efd2b26e0361da99da9df4648def7ee8441c3b728afa9bcde0f9b26a",
+      "spki_sha256": "3b0d73b4be4a854adc3e51d7ef9fa48aefbb2cdd824d67bdc7d7d09a2abc2d43",
+      "company_website": "http://www.firmaprofesional.com/",
+      "test_website_valid": "https://testsslev.firmaprofesional.com"
+    },
+    {
+      "common_name": "ANF Secure Server Root CA",
+      "owner": "Autoridad de Certificación (ANF AC)",
+      "organization": "ANF Autoridad de Certificacion",
+      "geographic_focus": "Mainly Spain, European Union",
+      "trust_bits": "Websites",
+      "cert_sha256": "fb8fec759169b9106b1e511644c618c51304373f6c0643088d8beffd1b997599",
+      "spki_sha256": "9a52ff6a3cb6e353a08567e0dc9c395b300d60a22292ab8c18c1656b2983ae90",
+      "company_website": "https://www.anf.es",
+      "test_website_valid": "https://testvalidsslev.anf.es"
+    },
+    {
+      "common_name": "ACCVRAIZ1",
+      "owner": "Government of Spain, Autoritat de Certificació de la Comunitat Valenciana (ACCV)",
+      "organization": "ACCV",
+      "geographic_focus": "Valencia region of Spain",
+      "trust_bits": "Websites",
+      "cert_sha256": "9a6ec012e1a7da9dbe34194d478ad7c0db1822fb071df12981496ed104384113",
+      "spki_sha256": "05570ae6eb0fceb4210e6db79486b7094caf200401e149b6677441b5f25e449b",
+      "company_website": "https://www.accv.es",
+      "test_website_valid": "https://activo.accv.es/test/hola.html"
+    },
+    {
+      "common_name": "AC RAIZ FNMT-RCM",
+      "owner": "Government of Spain, Fábrica Nacional de Moneda y Timbre (FNMT)",
+      "organization": "FNMT-RCM",
+      "geographic_focus": "Spain",
+      "trust_bits": "Websites",
+      "cert_sha256": "ebc5570c29018c4d67b1aa127baf12f703b4611ebc17b7dab5573894179b93fa",
+      "spki_sha256": "2fc5667a4b9a2678ed6ac6ad25465fcbf6094bfcd9504097c7a8fa47ade5e888",
+      "company_website": "http://www.cert.fnmt.es/",
+      "test_website_valid": "https://www.sede.fnmt.gob.es"
+    },
+    {
+      "common_name": "AC RAIZ FNMT-RCM SERVIDORES SEGUROS",
+      "owner": "Government of Spain, Fábrica Nacional de Moneda y Timbre (FNMT)",
+      "organization": "FNMT-RCM",
+      "geographic_focus": "Spain",
+      "trust_bits": "Websites",
+      "cert_sha256": "554153b13d2cf9ddb753bfbe1a4e0ae08d0aa4187058fe60a2b862b2e4b87bcb",
+      "spki_sha256": "453b74809b69019627f2f843001db5950cdd1d45371053e7f3dfdbc3714113c6",
+      "company_website": "http://www.cert.fnmt.es/",
+      "test_website_valid": "https://testactivetipo1.cert.fnmt.es/"
+    },
+    {
+      "common_name": "Izenpe.com",
+      "owner": "Izenpe S.A.",
+      "organization": "IZENPE S.A.",
+      "geographic_focus": "Basque Country, Spain",
+      "trust_bits": "Websites",
+      "cert_sha256": "2530cc8e98321502bad96f9b1fba1b099e2d299e0f4548bb914f363bc0d4531f",
+      "spki_sha256": "952c2039c0243eb515dd73d83fc3643184874feb0862a9837731ed9b4742e17a",
+      "company_website": "http://www.izenpe.com",
+      "test_website_valid": "https://test-ev-qualified.izenpe.eus"
+    }
+  ]
+}

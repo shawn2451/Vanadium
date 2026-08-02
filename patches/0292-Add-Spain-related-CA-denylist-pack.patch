@@ -1,0 +1,66 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Shawn Zhang <shawn.zhang@pepperstone.com>
+Date: Sat, 2 Aug 2026 06:10:00 +0000
+Subject: [PATCH] Add Spain-related CA denylist pack
+
+Downstream: include Mozilla-scanned Spain roots (FNMT, ACCV, ANF,
+Firmaprofesional, Izenpe) in CheckChinaRelatedCaDenylist.
+
+diff --git a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc
+index 1111111111111..2222222222222 100644
+--- a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc
++++ b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc
+@@ -41,6 +41,8 @@
+       MatchesDeniedSpki(public_key_hashes, data::singapore::kEnabled,
+                         data::singapore::kSpkiCount,
+                         data::singapore::kDeniedSpkis) ||
++      MatchesDeniedSpki(public_key_hashes, data::spain::kEnabled,
++                        data::spain::kSpkiCount, data::spain::kDeniedSpkis) ||
+       MatchesDeniedSpki(public_key_hashes, data::russia::kEnabled,
+                         data::russia::kSpkiCount, data::russia::kDeniedSpkis) ||
+       MatchesDeniedSpki(public_key_hashes, data::iran::kEnabled,
+diff --git a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.h b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.h
+index 1111111111111..2222222222222 100644
+--- a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.h
++++ b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.h
+@@ -13,8 +13,8 @@
+ namespace china_denylist {
+ 
+ // Returns false if any SPKI in |public_key_hashes| (leaf→root) matches a
+-// country-related CA denylist entry (China / Malaysia / Singapore / Russia /
+-// Iran), compiled from CCADB / operator roots.
++// country-related CA denylist entry (China / Malaysia / Singapore / Spain /
++// Russia / Iran), compiled from CCADB / operator roots.
+ //
+ // Historical name kept for patch stability; checks all country packs.
+ bool CheckChinaRelatedCaDenylist(
+diff --git a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist_data.inc b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist_data.inc
+index 1111111111111..2222222222222 100644
+--- a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist_data.inc
++++ b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist_data.inc
+@@ -63,6 +63,25 @@
+ };
+ }  // namespace singapore
+ 
++namespace spain {
++constexpr bool kEnabled = true;
++constexpr size_t kSpkiCount = 6;
++constexpr uint8_t kDeniedSpkis[][32] = {
++  // Autoridad de Certificacion Firmaprofesional CIF A62634068
++  {0x3b, 0x0d, 0x73, 0xb4, 0xbe, 0x4a, 0x85, 0x4a, 0xdc, 0x3e, 0x51, 0xd7, 0xef, 0x9f, 0xa4, 0x8a, 0xef, 0xbb, 0x2c, 0xdd, 0x82, 0x4d, 0x67, 0xbd, 0xc7, 0xd7, 0xd0, 0x9a, 0x2a, 0xbc, 0x2d, 0x43},
++  // ANF Secure Server Root CA
++  {0x9a, 0x52, 0xff, 0x6a, 0x3c, 0xb6, 0xe3, 0x53, 0xa0, 0x85, 0x67, 0xe0, 0xdc, 0x9c, 0x39, 0x5b, 0x30, 0x0d, 0x60, 0xa2, 0x22, 0x92, 0xab, 0x8c, 0x18, 0xc1, 0x65, 0x6b, 0x29, 0x83, 0xae, 0x90},
++  // ACCVRAIZ1
++  {0x05, 0x57, 0x0a, 0xe6, 0xeb, 0x0f, 0xce, 0xb4, 0x21, 0x0e, 0x6d, 0xb7, 0x94, 0x86, 0xb7, 0x09, 0x4c, 0xaf, 0x20, 0x04, 0x01, 0xe1, 0x49, 0xb6, 0x67, 0x74, 0x41, 0xb5, 0xf2, 0x5e, 0x44, 0x9b},
++  // AC RAIZ FNMT-RCM
++  {0x2f, 0xc5, 0x66, 0x7a, 0x4b, 0x9a, 0x26, 0x78, 0xed, 0x6a, 0xc6, 0xad, 0x25, 0x46, 0x5f, 0xcb, 0xf6, 0x09, 0x4b, 0xfc, 0xd9, 0x50, 0x40, 0x97, 0xc7, 0xa8, 0xfa, 0x47, 0xad, 0xe5, 0xe8, 0x88},
++  // AC RAIZ FNMT-RCM SERVIDORES SEGUROS
++  {0x45, 0x3b, 0x74, 0x80, 0x9b, 0x69, 0x01, 0x96, 0x27, 0xf2, 0xf8, 0x43, 0x00, 0x1d, 0xb5, 0x95, 0x0c, 0xdd, 0x1d, 0x45, 0x37, 0x10, 0x53, 0xe7, 0xf3, 0xdf, 0xdb, 0xc3, 0x71, 0x41, 0x13, 0xc6},
++  // Izenpe.com
++  {0x95, 0x2c, 0x20, 0x39, 0xc0, 0x24, 0x3e, 0xb5, 0x15, 0xdd, 0x73, 0xd8, 0x3f, 0xc3, 0x64, 0x31, 0x84, 0x87, 0x4f, 0xeb, 0x08, 0x62, 0xa9, 0x83, 0x77, 0x31, 0xed, 0x9b, 0x47, 0x42, 0xe1, 0x7a},
++};
++}  // namespace spain
++
+ namespace russia {
+ constexpr bool kEnabled = true;
+ constexpr size_t kSpkiCount = 0;
