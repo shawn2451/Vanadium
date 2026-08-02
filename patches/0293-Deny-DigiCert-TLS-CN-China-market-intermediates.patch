@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Shawn Zhang <shawn.zhang@pepperstone.com>
+Date: Sat, 2 Aug 2026 06:30:00 +0000
+Subject: [PATCH] Deny DigiCert TLS CN China-market intermediates
+
+Match DigiCert Secure Site/Basic/EV G2 TLS CN intermediates in the
+denylist checker (blocks WeChat-style chains without distrusting DigiCert roots).
+
+diff --git a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc
+index 1111111111111..2222222222222 100644
+--- a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc
++++ b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc
+@@ -46,7 +46,10 @@
+       MatchesDeniedSpki(public_key_hashes, data::russia::kEnabled,
+                         data::russia::kSpkiCount, data::russia::kDeniedSpkis) ||
+       MatchesDeniedSpki(public_key_hashes, data::iran::kEnabled,
+-                        data::iran::kSpkiCount, data::iran::kDeniedSpkis)) {
++                        data::iran::kSpkiCount, data::iran::kDeniedSpkis) ||
++      MatchesDeniedSpki(public_key_hashes, data::digicert_tls_cn::kEnabled,
++                        data::digicert_tls_cn::kSpkiCount,
++                        data::digicert_tls_cn::kDeniedSpkis)) {
+     return false;
+   }
+   return true;
+diff --git a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.h b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.h
+index 1111111111111..2222222222222 100644
+--- a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.h
++++ b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.h
+@@ -14,7 +14,7 @@
+ 
+ // Returns false if any SPKI in |public_key_hashes| (leaf→root) matches a
+ // country-related CA denylist entry (China / Malaysia / Singapore / Spain /
+-// Russia / Iran), compiled from CCADB / operator roots.
++// Russia / Iran / DigiCert TLS CN intermediates), compiled from CCADB / operator roots.
+ //
+ // Historical name kept for patch stability; checks all country packs.
+ bool CheckChinaRelatedCaDenylist(
+diff --git a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist_data.inc b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist_data.inc
+index 1111111111111..2222222222222 100644
+--- a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist_data.inc
++++ b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist_data.inc
+@@ -94,6 +94,19 @@
+ constexpr uint8_t kDeniedSpkis[][32] = {{0}};
+ }  // namespace iran
+ 
++namespace digicert_tls_cn {
++constexpr bool kEnabled = true;
++constexpr size_t kSpkiCount = 3;
++constexpr uint8_t kDeniedSpkis[][32] = {
++  // DigiCert Secure Site OV G2 TLS CN RSA4096 SHA256 2022 CA1
++  {0x89, 0x15, 0x6d, 0xea, 0xf1, 0x40, 0x1b, 0x4f, 0xa0, 0x07, 0x88, 0x7b, 0x28, 0x59, 0xed, 0x05, 0xfc, 0x61, 0x0e, 0x3c, 0x36, 0x38, 0x7b, 0x94, 0xd2, 0xdb, 0x02, 0x7c, 0xbe, 0x41, 0x09, 0x6f},
++  // DigiCert Basic OV G2 TLS CN RSA4096 SHA256 2022 CA1
++  {0xda, 0xd2, 0x7c, 0x33, 0xff, 0x5c, 0x46, 0xc4, 0xf5, 0x7d, 0x44, 0x72, 0xaf, 0x58, 0x0e, 0x75, 0x6d, 0x9f, 0x6c, 0x8c, 0x56, 0xe3, 0xda, 0x9c, 0x12, 0xfc, 0x3b, 0x65, 0xf7, 0x28, 0xde, 0x13},
++  // DigiCert Secure Site EV G2 TLS CN RSA4096 SHA256 2022 CA1
++  {0xa8, 0x8d, 0x36, 0xd5, 0xa3, 0xc2, 0x77, 0x06, 0x68, 0x51, 0xbb, 0x25, 0xab, 0x01, 0x4d, 0x68, 0x38, 0x1f, 0xa1, 0x2b, 0x6d, 0x8b, 0x5f, 0xe0, 0x11, 0x16, 0xda, 0x7d, 0xdf, 0xa9, 0x1c, 0xae},
++};
++}  // namespace digicert_tls_cn
++
+ constexpr bool kEnabled = true;
+ constexpr size_t kSpkiCount = 15;
+ constexpr uint8_t kDeniedSpkis[][32] = {

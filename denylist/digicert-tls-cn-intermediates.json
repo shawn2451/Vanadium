@@ -1,0 +1,50 @@
+{
+  "id": "digicert-tls-cn-intermediates",
+  "title": "DigiCert China-market TLS CN intermediates",
+  "generated_at": "2026-08-02T06:25:00.000Z",
+  "source": "https://cacerts.digicert.com/ + live weixin.qq.com chain",
+  "selection_rule": "Intermediate CA common names containing 'TLS CN' under DigiCert G2 China-market hierarchy",
+  "notes": [
+    "These are DigiCert intermediates (rooted at DigiCert Global Root G2), not Chinese national CAs.",
+    "Used by many CN sites (e.g. WeChat) for OV/EV issuance sold into the China market.",
+    "Denylist matches ANY chain position — leaf, intermediate, or root — by cert/SPKI SHA-256.",
+    "Does NOT block DigiCert Global Root G2 itself (that would break most DigiCert sites worldwide)."
+  ],
+  "enabled_by_default": true,
+  "match": [
+    "cert_sha256",
+    "spki_sha256"
+  ],
+  "roots": [
+    {
+      "common_name": "DigiCert Secure Site OV G2 TLS CN RSA4096 SHA256 2022 CA1",
+      "owner": "DigiCert, Inc.",
+      "organization": "DigiCert, Inc.",
+      "geographic_focus": "China-market DigiCert intermediate (TLS CN)",
+      "cert_sha256": "7cd6cdd25eee2512aaf1419afd44c146c43aa1093d5a60d4ed39efbdda815ad4",
+      "spki_sha256": "89156deaf1401b4fa007887b2859ed05fc610e3c36387b94d2db027cbe41096f",
+      "company_website": "https://www.digicert.com/",
+      "source_url": "https://cacerts.digicert.com/DigiCertSecureSiteOVG2TLSCNRSA4096SHA2562022CA1.crt"
+    },
+    {
+      "common_name": "DigiCert Basic OV G2 TLS CN RSA4096 SHA256 2022 CA1",
+      "owner": "DigiCert, Inc.",
+      "organization": "DigiCert, Inc.",
+      "geographic_focus": "China-market DigiCert intermediate (TLS CN)",
+      "cert_sha256": "f16c99cde19ed1ace8b4fbc700e05e7eff2116fd6a22427766b251c6e8bb3ce7",
+      "spki_sha256": "dad27c33ff5c46c4f57d4472af580e756d9f6c8c56e3da9c12fc3b65f728de13",
+      "company_website": "https://www.digicert.com/",
+      "source_url": "https://cacerts.digicert.com/DigiCertBasicOVG2TLSCNRSA4096SHA2562022CA1.crt"
+    },
+    {
+      "common_name": "DigiCert Secure Site EV G2 TLS CN RSA4096 SHA256 2022 CA1",
+      "owner": "DigiCert, Inc.",
+      "organization": "DigiCert, Inc.",
+      "geographic_focus": "China-market DigiCert intermediate (TLS CN)",
+      "cert_sha256": "8fc89b7368a29129735677440476908711da8f3f04c0ab6a61d6de9d4eb4d1c2",
+      "spki_sha256": "a88d36d5a3c277066851bb25ab014d68381fa12b6d8b5fe01116da7ddfa91cae",
+      "company_website": "https://www.digicert.com/",
+      "source_url": "https://cacerts.digicert.com/DigiCertSecureSiteEVG2TLSCNRSA4096SHA2562022CA1.crt"
+    }
+  ]
+}

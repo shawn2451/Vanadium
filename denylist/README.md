@@ -10,6 +10,7 @@ Reject TLS chains whose SPKI set intersects compiled denylists for:
 | Spain | `spain-related-cas.json` | Mozilla Included (FNMT / ACCV / ANF / Firmaprofesional / Izenpe) |
 | Russia | `russia-related-cas.json` | empty (no Mozilla/MS Included roots) |
 | Iran | `iran-related-cas.json` | empty (no Mozilla/MS Included roots) |
+| DigiCert TLS CN | `digicert-tls-cn-intermediates.json` | DigiCert China-market **intermediates** (not DigiCert root) |
 
 Enforcement lives in patch `0290` (hook) + `0291` (multi-country data / checker).
 
