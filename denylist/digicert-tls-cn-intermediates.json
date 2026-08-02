@@ -1,12 +1,13 @@
 {
   "id": "digicert-tls-cn-intermediates",
   "title": "DigiCert China-market TLS CN intermediates",
-  "generated_at": "2026-08-02T06:25:00.000Z",
-  "source": "https://cacerts.digicert.com/ + live weixin.qq.com chain",
+  "generated_at": "2026-08-02T06:40:00.000Z",
+  "source": "https://cacerts.digicert.com/ + live weixin.qq.com / baidu.com chains",
   "selection_rule": "Intermediate CA common names containing 'TLS CN' under DigiCert G2 China-market hierarchy",
   "notes": [
     "These are DigiCert intermediates (rooted at DigiCert Global Root G2), not Chinese national CAs.",
     "Used by many CN sites (e.g. WeChat) for OV/EV issuance sold into the China market.",
+    "Includes Secure Site Pro TLS CN (sometimes seen on baidu.com); www.baidu.com often uses GlobalSign instead.",
     "Denylist matches ANY chain position — leaf, intermediate, or root — by cert/SPKI SHA-256.",
     "Does NOT block DigiCert Global Root G2 itself (that would break most DigiCert sites worldwide)."
   ],
@@ -45,6 +46,26 @@
       "spki_sha256": "a88d36d5a3c277066851bb25ab014d68381fa12b6d8b5fe01116da7ddfa91cae",
       "company_website": "https://www.digicert.com/",
       "source_url": "https://cacerts.digicert.com/DigiCertSecureSiteEVG2TLSCNRSA4096SHA2562022CA1.crt"
+    },
+    {
+      "common_name": "DigiCert Secure Site Pro G2 TLS CN RSA4096 SHA256 2022 CA1",
+      "owner": "DigiCert, Inc.",
+      "organization": "DigiCert, Inc.",
+      "geographic_focus": "China-market DigiCert intermediate (TLS CN)",
+      "cert_sha256": "826ebd90e946c25d3df05abfb911ac0a426c7a9a063b7224464710bec5a58ce1",
+      "spki_sha256": "c37756d505d80acc111c6e42a20240fa9ac135abd06da2aea361417b1d106094",
+      "company_website": "https://www.digicert.com/",
+      "source_url": "https://cacerts.digicert.com/DigiCertSecureSiteProG2TLSCNRSA4096SHA2562022CA1.crt"
+    },
+    {
+      "common_name": "DigiCert Secure Site Pro EV G2 TLS CN RSA4096 SHA256 2022 CA1",
+      "owner": "DigiCert, Inc.",
+      "organization": "DigiCert, Inc.",
+      "geographic_focus": "China-market DigiCert intermediate (TLS CN)",
+      "cert_sha256": "b480e11a6bd0c2bc538b1c7db1c63b40694e5dedd93752d082d9fd422fcb3fbd",
+      "spki_sha256": "5eda4f47015e97b6c4841194adc61130998d392effc42d2372f9577cba6c14f7",
+      "company_website": "https://www.digicert.com/",
+      "source_url": "https://cacerts.digicert.com/DigiCertSecureSiteProEVG2TLSCNRSA4096SHA2562022CA1.crt"
     }
   ]
 }
