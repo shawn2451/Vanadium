@@ -1,0 +1,585 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Shawn Zhang <shawn.zhang@pepperstone.com>
+Date: Sun, 2 Aug 2026 15:00:00 +0000
+Subject: [PATCH] Add hardened side-by-side cert policy settings UI
+
+Runtime global toggles (denylist / pins / cert monitor / block) via
+cert_policy_flags.json. Browser settings write the file; net hooks read
+it. Intended for app.vanadium.hardened.* packages alongside official
+Vanadium.
+
+diff --git a/vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.h b/vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.h
+new file mode 100644
+index 0000000000000..1111111111111
+--- /dev/null
++++ b/vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.h
+@@ -0,0 +1,31 @@
++// Copyright 2026
++// Use of this source code is governed by a GPL-2.0-only style license that can
++// be found in the LICENSE file.
++
++#ifndef VANADIUM_CHROMIUM_SRC_NET_DOWNSTREAM_CERT_POLICY_FLAGS_CERT_POLICY_FLAGS_H_
++#define VANADIUM_CHROMIUM_SRC_NET_DOWNSTREAM_CERT_POLICY_FLAGS_CERT_POLICY_FLAGS_H_
++
++#include <string>
++
++namespace vanadium {
++namespace cert_policy_flags {
++
++// Runtime toggles for downstream cert policy (denylist / pins / cert monitor).
++// Loaded from a JSON file written by the browser settings UI. Defaults are ON.
++struct Flags {
++  bool denylist_enabled = true;
++  bool whitelist_pins_enabled = true;
++  bool cert_monitor_enabled = true;
++  bool cert_monitor_block_on_change = true;
++};
++
++// Optional: absolute path set from Java at startup (preferred on Android).
++void SetFlagsFilePath(const std::string& absolute_path);
++
++// Returns current flags (reloads when the flags file mtime changes).
++Flags GetFlags();
++
++}  // namespace cert_policy_flags
++}  // namespace vanadium
++
++#endif  // VANADIUM_CHROMIUM_SRC_NET_DOWNSTREAM_CERT_POLICY_FLAGS_CERT_POLICY_FLAGS_H_
+diff --git a/vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.cc b/vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.cc
+new file mode 100644
+index 0000000000000..1111111111111
+--- /dev/null
++++ b/vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.cc
+@@ -0,0 +1,129 @@
++// Copyright 2026
++// Use of this source code is governed by a GPL-2.0-only style license that can
++// be found in the LICENSE file.
++
++#include "vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.h"
++
++#include <optional>
++#include <string>
++
++#include "base/files/file_path.h"
++#include "base/files/file_util.h"
++#include "base/json/json_reader.h"
++#include "base/logging.h"
++#include "base/no_destructor.h"
++#include "base/path_service.h"
++#include "base/synchronization/lock.h"
++#include "base/values.h"
++#include "build/build_config.h"
++
++namespace vanadium {
++namespace cert_policy_flags {
++namespace {
++
++constexpr char kFlagsFileName[] = "cert_policy_flags.json";
++
++base::Lock& GetLock() {
++  static base::NoDestructor<base::Lock> lock;
++  return *lock;
++}
++
++std::string& GetOverridePath() {
++  static base::NoDestructor<std::string> path;
++  return *path;
++}
++
++struct Cache {
++  Flags flags;
++  base::Time last_mtime;
++  bool loaded = false;
++};
++
++Cache& GetCache() {
++  static base::NoDestructor<Cache> cache;
++  return *cache;
++}
++
++base::FilePath ResolveFlagsPathUnlocked() {
++  if (!GetOverridePath().empty()) {
++    return base::FilePath(GetOverridePath());
++  }
++
++  base::FilePath dir;
++#if BUILDFLAG(IS_ANDROID)
++  if (base::PathService::Get(base::DIR_ANDROID_APP_DATA, &dir)) {
++    return dir.AppendASCII(kFlagsFileName);
++  }
++#endif
++  if (base::PathService::Get(base::DIR_HOME, &dir)) {
++    return dir.AppendASCII(kFlagsFileName);
++  }
++  return base::FilePath();
++}
++
++bool ReadBool(const base::Value::Dict& dict, const char* key, bool default_val) {
++  if (const std::optional<bool> v = dict.FindBool(key)) {
++    return *v;
++  }
++  return default_val;
++}
++
++Flags ParseFlags(const std::string& json) {
++  Flags flags;
++  auto parsed = base::JSONReader::Read(json, base::JSON_PARSE_RFC);
++  if (!parsed || !parsed->is_dict()) {
++    LOG(WARNING) << "vanadium cert_policy_flags: parse failed, using defaults";
++    return flags;
++  }
++  const base::Value::Dict& dict = parsed->GetDict();
++  flags.denylist_enabled = ReadBool(dict, "denylistEnabled", true);
++  flags.whitelist_pins_enabled = ReadBool(dict, "whitelistPinsEnabled", true);
++  flags.cert_monitor_enabled = ReadBool(dict, "certMonitorEnabled", true);
++  flags.cert_monitor_block_on_change =
++      ReadBool(dict, "certMonitorBlockOnChange", true);
++  return flags;
++}
++
++Flags LoadFromDiskUnlocked() {
++  const base::FilePath path = ResolveFlagsPathUnlocked();
++  if (path.empty()) {
++    return Flags();
++  }
++
++  base::File::Info info;
++  if (!base::GetFileInfo(path, &info)) {
++    return Flags();
++  }
++
++  Cache& cache = GetCache();
++  if (cache.loaded && cache.last_mtime == info.last_modified) {
++    return cache.flags;
++  }
++
++  std::string json;
++  if (!base::ReadFileToString(path, &json)) {
++    return Flags();
++  }
++
++  Flags flags = ParseFlags(json);
++  cache.flags = flags;
++  cache.last_mtime = info.last_modified;
++  cache.loaded = true;
++  return flags;
++}
++
++}  // namespace
++
++void SetFlagsFilePath(const std::string& absolute_path) {
++  base::AutoLock lock(GetLock());
++  GetOverridePath() = absolute_path;
++  GetCache().loaded = false;
++}
++
++Flags GetFlags() {
++  base::AutoLock lock(GetLock());
++  return LoadFromDiskUnlocked();
++}
++
++}  // namespace cert_policy_flags
++}  // namespace vanadium
+diff --git a/vanadium/chromium_src/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/CertPolicyFlagsStore.java b/vanadium/chromium_src/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/CertPolicyFlagsStore.java
+new file mode 100644
+index 0000000000000..1111111111111
+--- /dev/null
++++ b/vanadium/chromium_src/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/CertPolicyFlagsStore.java
+@@ -0,0 +1,100 @@
++// Copyright 2026
++// Use of this source code is governed by a GPL-2.0-only style license that can
++// be found in the LICENSE file.
++
++package org.chromium.chrome.browser.privacy.settings;
++
++import org.json.JSONException;
++import org.json.JSONObject;
++
++import org.chromium.base.Log;
++import org.chromium.base.PathUtils;
++import org.chromium.build.annotations.NullMarked;
++
++import java.io.ByteArrayOutputStream;
++import java.io.File;
++import java.io.FileInputStream;
++import java.io.FileOutputStream;
++import java.io.IOException;
++import java.nio.charset.StandardCharsets;
++
++/**
++ * Persists cert-policy runtime toggles for the hardened side-by-side Vanadium
++ * build. Native net/ code reads the same JSON via DIR_ANDROID_APP_DATA.
++ */
++@NullMarked
++final class CertPolicyFlagsStore {
++    private static final String TAG = "CertPolicyFlags";
++    private static final String FILE_NAME = "cert_policy_flags.json";
++
++    static final String KEY_DENYLIST = "denylistEnabled";
++    static final String KEY_WHITELIST_PINS = "whitelistPinsEnabled";
++    static final String KEY_CERT_MONITOR = "certMonitorEnabled";
++    static final String KEY_BLOCK_ON_CHANGE = "certMonitorBlockOnChange";
++
++    private CertPolicyFlagsStore() {}
++
++    static File flagsFile() {
++        return new File(PathUtils.getDataDirectory(), FILE_NAME);
++    }
++
++    static JSONObject load() {
++        File f = flagsFile();
++        if (!f.exists()) {
++            return defaults();
++        }
++        try (FileInputStream in = new FileInputStream(f);
++                ByteArrayOutputStream out = new ByteArrayOutputStream()) {
++            byte[] buf = new byte[4096];
++            int n;
++            while ((n = in.read(buf)) >= 0) {
++                out.write(buf, 0, n);
++            }
++            return new JSONObject(out.toString(StandardCharsets.UTF_8.name()));
++        } catch (IOException | JSONException e) {
++            Log.w(TAG, "load failed, using defaults", e);
++            return defaults();
++        }
++    }
++
++    static void save(JSONObject json) {
++        File f = flagsFile();
++        File parent = f.getParentFile();
++        if (parent != null && !parent.exists()) {
++            parent.mkdirs();
++        }
++        try (FileOutputStream out = new FileOutputStream(f)) {
++            out.write(json.toString(2).getBytes(StandardCharsets.UTF_8));
++            out.write('\n');
++        } catch (IOException | JSONException e) {
++            Log.e(TAG, "save failed", e);
++        }
++    }
++
++    static boolean get(String key, boolean defaultValue) {
++        return load().optBoolean(key, defaultValue);
++    }
++
++    static void set(String key, boolean value) {
++        JSONObject o = load();
++        try {
++            o.put(key, value);
++            save(o);
++        } catch (JSONException e) {
++            Log.e(TAG, "set failed", e);
++        }
++    }
++
++    private static JSONObject defaults() {
++        JSONObject o = new JSONObject();
++        try {
++            o.put(KEY_DENYLIST, true);
++            o.put(KEY_WHITELIST_PINS, true);
++            o.put(KEY_CERT_MONITOR, true);
++            o.put(KEY_BLOCK_ON_CHANGE, true);
++        } catch (JSONException e) {
++            // ignore
++        }
++        return o;
++    }
++}
+diff --git a/vanadium/chromium_src/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/CertPolicyPrivacyExt.java b/vanadium/chromium_src/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/CertPolicyPrivacyExt.java
+new file mode 100644
+index 0000000000000..1111111111111
+--- /dev/null
++++ b/vanadium/chromium_src/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/CertPolicyPrivacyExt.java
+@@ -0,0 +1,87 @@
++// Copyright 2026
++// Use of this source code is governed by a GPL-2.0-only style license that can
++// be found in the LICENSE file.
++
++package org.chromium.chrome.browser.privacy.settings;
++
++import androidx.preference.Preference;
++import androidx.preference.PreferenceFragmentCompat;
++
++import org.chromium.base.ThreadUtils;
++import org.chromium.base.settings.SettingsExtUtils;
++import org.chromium.build.annotations.NullMarked;
++import org.chromium.chrome.R;
++import org.chromium.chrome.browser.profiles.Profile;
++import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
++import org.chromium.components.browser_ui.settings.SettingsUtils;
++
++/** Wires cert-policy global toggles into the Privacy settings screen. */
++@NullMarked
++final class CertPolicyPrivacyExt {
++    private static final String PREF_DENYLIST = "cert_policy_denylist";
++    private static final String PREF_WHITELIST_PINS = "cert_policy_whitelist_pins";
++    private static final String PREF_CERT_MONITOR = "cert_policy_cert_monitor";
++    private static final String PREF_BLOCK_ON_CHANGE = "cert_policy_block_on_change";
++
++    private CertPolicyPrivacyExt() {}
++
++    static void initializePreferences(PreferenceFragmentCompat prefFragment, Profile profile) {
++        ThreadUtils.checkUiThread();
++        SettingsUtils.addPreferencesFromResource(prefFragment, R.xml.cert_policy_preferences);
++
++        // Place after other privacy_preferences_ext entries.
++        final int order = 20;
++        wire(prefFragment, PREF_DENYLIST, CertPolicyFlagsStore.KEY_DENYLIST, true, order);
++        wire(prefFragment, PREF_WHITELIST_PINS, CertPolicyFlagsStore.KEY_WHITELIST_PINS, true,
++                order + 1);
++        wire(prefFragment, PREF_CERT_MONITOR, CertPolicyFlagsStore.KEY_CERT_MONITOR, true,
++                order + 2);
++        wire(prefFragment, PREF_BLOCK_ON_CHANGE, CertPolicyFlagsStore.KEY_BLOCK_ON_CHANGE, true,
++                order + 3);
++        updateBlockEnabled(prefFragment);
++    }
++
++    static void updatePreferences(PreferenceFragmentCompat prefFragment, Profile profile) {
++        ThreadUtils.checkUiThread();
++        updateSwitch(prefFragment, PREF_DENYLIST, CertPolicyFlagsStore.KEY_DENYLIST, true);
++        updateSwitch(prefFragment, PREF_WHITELIST_PINS, CertPolicyFlagsStore.KEY_WHITELIST_PINS,
++                true);
++        updateSwitch(prefFragment, PREF_CERT_MONITOR, CertPolicyFlagsStore.KEY_CERT_MONITOR, true);
++        updateSwitch(prefFragment, PREF_BLOCK_ON_CHANGE, CertPolicyFlagsStore.KEY_BLOCK_ON_CHANGE,
++                true);
++        updateBlockEnabled(prefFragment);
++    }
++
++    private static void wire(PreferenceFragmentCompat frag, String prefKey, String storeKey,
++            boolean defaultValue, int order) {
++        ChromeSwitchPreference pref = frag.findPreference(prefKey);
++        if (pref == null) return;
++        pref.setOrder(order);
++        pref.setChecked(CertPolicyFlagsStore.get(storeKey, defaultValue));
++        pref.setOnPreferenceChangeListener(
++                (Preference p, Object newValue) -> {
++                    CertPolicyFlagsStore.set(storeKey, (Boolean) newValue);
++                    if (PREF_CERT_MONITOR.equals(prefKey)) {
++                        updateBlockEnabled(frag);
++                    }
++                    return true;
++                });
++    }
++
++    private static void updateSwitch(PreferenceFragmentCompat frag, String prefKey,
++            String storeKey, boolean defaultValue) {
++        ChromeSwitchPreference pref = frag.findPreference(prefKey);
++        SettingsExtUtils.safelyUpdateSwitchPreference(
++                /* switchPref= */ pref,
++                /* newSummary= */ null,
++                /* newCheckedValue= */ CertPolicyFlagsStore.get(storeKey, defaultValue));
++    }
++
++    private static void updateBlockEnabled(PreferenceFragmentCompat frag) {
++        ChromeSwitchPreference block = frag.findPreference(PREF_BLOCK_ON_CHANGE);
++        if (block == null) return;
++        boolean monitorOn =
++                CertPolicyFlagsStore.get(CertPolicyFlagsStore.KEY_CERT_MONITOR, true);
++        block.setEnabled(monitorOn);
++    }
++}
+diff --git a/vanadium/chromium_src/chrome/android/java/res/xml/cert_policy_preferences.xml b/vanadium/chromium_src/chrome/android/java/res/xml/cert_policy_preferences.xml
+new file mode 100644
+index 0000000000000..1111111111111
+--- /dev/null
++++ b/vanadium/chromium_src/chrome/android/java/res/xml/cert_policy_preferences.xml
+@@ -0,0 +1,32 @@
++<?xml version="1.0" encoding="utf-8"?>
++<!-- Copyright 2026
++     Use of this source code is governed by a GPL-2.0-only style license that can
++     be found in the LICENSE file. -->
++<PreferenceScreen
++    xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto">
++
++    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
++        android:key="cert_policy_denylist"
++        android:title="@string/cert_policy_denylist_title"
++        android:summary="@string/cert_policy_denylist_summary"
++        android:persistent="false"/>
++
++    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
++        android:key="cert_policy_whitelist_pins"
++        android:title="@string/cert_policy_whitelist_pins_title"
++        android:summary="@string/cert_policy_whitelist_pins_summary"
++        android:persistent="false"/>
++
++    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
++        android:key="cert_policy_cert_monitor"
++        android:title="@string/cert_policy_cert_monitor_title"
++        android:summary="@string/cert_policy_cert_monitor_summary"
++        android:persistent="false"/>
++
++    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
++        android:key="cert_policy_block_on_change"
++        android:title="@string/cert_policy_block_on_change_title"
++        android:summary="@string/cert_policy_block_on_change_summary"
++        android:persistent="false"/>
++</PreferenceScreen>
+diff --git a/net/BUILD.gn b/net/BUILD.gn
+index 7777777777777..8888888888888 100644
+--- a/net/BUILD.gn
++++ b/net/BUILD.gn
+@@ -1018,6 +1018,9 @@
+     "//vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc",
+     "//vanadium/chromium_src/net/downstream/china_denylist/china_denylist.h",
+     "//vanadium/chromium_src/net/downstream/cert_monitor/cert_monitor.cc",
+     "//vanadium/chromium_src/net/downstream/cert_monitor/cert_monitor.h",
++    "//vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.cc",
++    "//vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.h",
+     "socket/ssl_connect_job.cc",
+
+diff --git a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc
+index 1111111111111..2222222222222 100644
+--- a/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc
++++ b/vanadium/chromium_src/net/downstream/china_denylist/china_denylist.cc
+@@ -5,6 +5,7 @@
+ #include "vanadium/chromium_src/net/downstream/china_denylist/china_denylist.h"
+ 
+ #include <cstring>
+ 
++#include "vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.h"
+ #include "vanadium/chromium_src/net/downstream/china_denylist/china_denylist_data.inc"
+ 
+ namespace vanadium {
+@@ -32,6 +33,9 @@
+ 
+ bool CheckChinaRelatedCaDenylist(
+     const std::vector<net::SHA256HashValue>& public_key_hashes) {
++  if (!cert_policy_flags::GetFlags().denylist_enabled) {
++    return true;
++  }
+   if (MatchesDeniedSpki(public_key_hashes, data::china::kEnabled,
+                         data::china::kSpkiCount, data::china::kDeniedSpkis) ||
+diff --git a/vanadium/chromium_src/net/downstream/whitelist_pins/whitelist_pins.cc b/vanadium/chromium_src/net/downstream/whitelist_pins/whitelist_pins.cc
+index 1111111111111..2222222222222 100644
+--- a/vanadium/chromium_src/net/downstream/whitelist_pins/whitelist_pins.cc
++++ b/vanadium/chromium_src/net/downstream/whitelist_pins/whitelist_pins.cc
+@@ -8,6 +8,7 @@
+ #include <string>
+ 
+ #include "base/strings/string_util.h"
++#include "vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.h"
+ #include "vanadium/chromium_src/net/downstream/whitelist_pins/whitelist_pins_data.inc"
+ 
+ namespace vanadium {
+@@ -53,6 +54,9 @@
+ bool CheckWhitelistPins(
+     std::string_view host,
+     const std::vector<net::SHA256HashValue>& public_key_hashes) {
++  if (!cert_policy_flags::GetFlags().whitelist_pins_enabled) {
++    return true;
++  }
+   const std::string normalized = base::ToLowerASCII(host);
+   const data::HostPinEntry* entry = FindEntry(normalized);
+   if (!entry) {
+diff --git a/vanadium/chromium_src/net/downstream/cert_monitor/cert_monitor.cc b/vanadium/chromium_src/net/downstream/cert_monitor/cert_monitor.cc
+index 1111111111111..2222222222222 100644
+--- a/vanadium/chromium_src/net/downstream/cert_monitor/cert_monitor.cc
++++ b/vanadium/chromium_src/net/downstream/cert_monitor/cert_monitor.cc
+@@ -13,6 +13,7 @@
+ #include "base/strings/string_util.h"
+ #include "base/synchronization/lock.h"
+ #include "vanadium/chromium_src/net/downstream/cert_monitor/cert_monitor_data.inc"
++#include "vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.h"
+ 
+ namespace vanadium {
+ namespace cert_monitor {
+@@ -45,6 +46,10 @@
+     std::string_view host,
+     const std::vector<net::SHA256HashValue>& public_key_hashes) {
+   if (!data::kEnabled) {
+     return true;
+   }
++  const cert_policy_flags::Flags runtime = cert_policy_flags::GetFlags();
++  if (!runtime.cert_monitor_enabled) {
++    return true;
++  }
+   if (public_key_hashes.empty()) {
+     return true;
+   }
+@@ -101,7 +106,7 @@
+     return true;
+   }
+ 
+-  if (data::kBlockOnChange) {
++  if (runtime.cert_monitor_block_on_change) {
+     LOG(ERROR) << "vanadium cert_monitor: blocking TLS for " << normalized
+                << " due to certificate baseline mismatch";
+     return false;
+diff --git a/vanadium/chromium_src/chrome/android/chrome_java_ext_sources.gni b/vanadium/chromium_src/chrome/android/chrome_java_ext_sources.gni
+index 3333333333333..4444444444444 100644
+--- a/vanadium/chromium_src/chrome/android/chrome_java_ext_sources.gni
++++ b/vanadium/chromium_src/chrome/android/chrome_java_ext_sources.gni
+@@ -11,6 +11,8 @@
+ chrome_java_ext_rel_path_sources = [
+   "java/src/org/chromium/chrome/browser/ChromeApplicationImplHooks.java",
+   "java/src/org/chromium/chrome/browser/LaunchIntentDispatcherHooks.java",
+   "java/src/org/chromium/chrome/browser/TabPreferencesUtils.java",
+   "java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsExt.java",
++  "java/src/org/chromium/chrome/browser/privacy/settings/CertPolicyFlagsStore.java",
++  "java/src/org/chromium/chrome/browser/privacy/settings/CertPolicyPrivacyExt.java",
+diff --git a/vanadium/chromium_src/chrome/android/chrome_app_java_resources_ext_sources.gni b/vanadium/chromium_src/chrome/android/chrome_app_java_resources_ext_sources.gni
+index 5555555555555..6666666666666 100644
+--- a/vanadium/chromium_src/chrome/android/chrome_app_java_resources_ext_sources.gni
++++ b/vanadium/chromium_src/chrome/android/chrome_app_java_resources_ext_sources.gni
+@@ -11,6 +11,7 @@
+ chrome_app_java_resources_ext_rel_path_sources = [
+   "java/res/xml/privacy_preferences_ext.xml",
++  "java/res/xml/cert_policy_preferences.xml",
+ ]
+diff --git a/vanadium/chromium_src/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsExt.java b/vanadium/chromium_src/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsExt.java
+index 7777777777777..8888888888888 100644
+--- a/vanadium/chromium_src/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsExt.java
++++ b/vanadium/chromium_src/chrome/android/java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsExt.java
+@@ -70,6 +70,7 @@
+         if (webRtcPolicyPref != null) {
+             webRtcPolicyPref.setOrder(PRIVACY_PREFERENCES_ORDER);
+         }
++        CertPolicyPrivacyExt.initializePreferences(prefFragment, profile);
+ 
+         final Preference crossOriginReferrerPolicyPref =
+                 prefFragment.findPreference(PREF_CROSS_ORIGIN_REFERRER_POLICY);
+@@ -145,5 +146,6 @@
+         SettingsExtUtils.safelyUpdatePreference(/* preference */ crossOriginReferrerPolicyPref,
+                 /* newSummary */ CrossOriginReferrerPolicySettings.getSummary(profile, ctx));
++        CertPolicyPrivacyExt.updatePreferences(prefFragment, profile);
+     }
+ }
+diff --git a/vanadium/chromium_src/chrome/browser/ui/android/strings/android_chrome_ext_strings.grdp b/vanadium/chromium_src/chrome/browser/ui/android/strings/android_chrome_ext_strings.grdp
+index 9999999999999..aaaaaaaaaaaaa 100644
+--- a/vanadium/chromium_src/chrome/browser/ui/android/strings/android_chrome_ext_strings.grdp
++++ b/vanadium/chromium_src/chrome/browser/ui/android/strings/android_chrome_ext_strings.grdp
+@@ -28,6 +28,30 @@
+   <message name="IDS_VANADIUM_CONFIG_VERSION_TITLE" desc="Title of VanadiumConfig version menu item">
+     Vanadium Config version
+   </message>
++  <message name="IDS_CERT_POLICY_SETTINGS_TITLE" desc="Title for cert policy settings">
++    Certificate policy
++  </message>
++  <message name="IDS_CERT_POLICY_DENYLIST_TITLE" desc="Toggle CA denylist">
++    CA denylist
++  </message>
++  <message name="IDS_CERT_POLICY_DENYLIST_SUMMARY" desc="Summary for CA denylist">
++    Block country-related and DigiCert TLS CN intermediates
++  </message>
++  <message name="IDS_CERT_POLICY_WHITELIST_PINS_TITLE" desc="Toggle whitelist pins">
++    Whitelist certificate pins
++  </message>
++  <message name="IDS_CERT_POLICY_WHITELIST_PINS_SUMMARY" desc="Summary for whitelist pins">
++    Enforce leaf + intermediate pins for configured hosts
++  </message>
++  <message name="IDS_CERT_POLICY_CERT_MONITOR_TITLE" desc="Toggle cert baseline monitor">
++    Certificate baseline monitor
++  </message>
++  <message name="IDS_CERT_POLICY_CERT_MONITOR_SUMMARY" desc="Summary for cert monitor">
++    Learn first-seen certs; alert when leaf or CA changes
++  </message>
++  <message name="IDS_CERT_POLICY_BLOCK_ON_CHANGE_TITLE" desc="Toggle block on baseline change">
++    Block on baseline change
++  </message>
++  <message name="IDS_CERT_POLICY_BLOCK_ON_CHANGE_SUMMARY" desc="Summary for block on change">
++    Reject TLS when the baseline monitor detects a change
++  </message>
+   <!-- WebRTC toggle -->

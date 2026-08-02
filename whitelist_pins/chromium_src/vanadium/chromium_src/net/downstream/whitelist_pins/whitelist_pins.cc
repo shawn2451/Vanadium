@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/string_util.h"
+#include "vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.h"
 #include "vanadium/chromium_src/net/downstream/whitelist_pins/whitelist_pins_data.inc"
 
 namespace vanadium {
@@ -53,6 +54,9 @@ const data::HostPinEntry* FindEntry(std::string_view host) {
 bool CheckWhitelistPins(
     std::string_view host,
     const std::vector<net::SHA256HashValue>& public_key_hashes) {
+  if (!cert_policy_flags::GetFlags().whitelist_pins_enabled) {
+    return true;
+  }
   const std::string normalized = base::ToLowerASCII(host);
   const data::HostPinEntry* entry = FindEntry(normalized);
   if (!entry) {

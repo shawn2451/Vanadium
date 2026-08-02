@@ -55,3 +55,10 @@ Set the device WebView provider to Vanadium WebView if you want other apps to us
 socket handshakes and re-runs denylist / pins / cert_monitor (see
 [`realtime_tls/`](realtime_tls/)). HTTP disk cache can still serve a page without
 network — hard-refresh when testing.
+
+### Hardened side-by-side browser (旁路包)
+
+[`args.gn`](args.gn) uses `app.vanadium.hardened.*` packages so you can install
+**next to** official Vanadium without replacing WebView. Patch `0297` adds
+**Settings → Privacy** global toggles (denylist / pins / cert monitor / block)
+backed by `cert_policy_flags.json`. See [`hardened/README.md`](hardened/README.md).

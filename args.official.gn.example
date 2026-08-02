@@ -1,0 +1,7 @@
+# Example: official GrapheneOS package names (for reference).
+# This fork's args.gn uses app.vanadium.hardened.* for side-by-side installs.
+#
+# chrome_public_manifest_package = "app.vanadium.browser"
+# system_webview_package_name = "app.vanadium.webview"
+# trichrome_library_package = "app.vanadium.trichromelibrary"
+# config_apk_package = "app.vanadium.config"

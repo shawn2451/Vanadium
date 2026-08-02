@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2026
+     Use of this source code is governed by a GPL-2.0-only style license that can
+     be found in the LICENSE file. -->
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="cert_policy_denylist"
+        android:title="@string/cert_policy_denylist_title"
+        android:summary="@string/cert_policy_denylist_summary"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="cert_policy_whitelist_pins"
+        android:title="@string/cert_policy_whitelist_pins_title"
+        android:summary="@string/cert_policy_whitelist_pins_summary"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="cert_policy_cert_monitor"
+        android:title="@string/cert_policy_cert_monitor_title"
+        android:summary="@string/cert_policy_cert_monitor_summary"
+        android:persistent="false"/>
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="cert_policy_block_on_change"
+        android:title="@string/cert_policy_block_on_change_title"
+        android:summary="@string/cert_policy_block_on_change_summary"
+        android:persistent="false"/>
+</PreferenceScreen>

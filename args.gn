@@ -41,13 +41,17 @@ enable_cardboard = false
 enable_remoting = false
 enable_reporting = false
 
+# Side-by-side "hardened" build (旁路包). Does NOT replace GrapheneOS official
+# app.vanadium.* — install alongside. Replace trichrome_certdigest /
+# config_apk_certdigest with: keytool -export-cert -alias vanadium \
+#   -keystore vanadium.keystore | sha256sum
 trichrome_certdigest = "c6adb8b83c6d4c17d292afde56fd488a51d316ff8f2c11c5410223bff8a7dbb3"
 
-chrome_public_manifest_package = "app.vanadium.browser"
-system_webview_package_name = "app.vanadium.webview"
-trichrome_library_package = "app.vanadium.trichromelibrary"
+chrome_public_manifest_package = "app.vanadium.hardened.browser"
+system_webview_package_name = "app.vanadium.hardened.webview"
+trichrome_library_package = "app.vanadium.hardened.trichromelibrary"
 
-config_apk_package = "app.vanadium.config"
+config_apk_package = "app.vanadium.hardened.config"
 config_apk_certdigest = "c6adb8b83c6d4c17d292afde56fd488a51d316ff8f2c11c5410223bff8a7dbb3"
 config_apk_version_name = "196"
 config_apk_version_code = "196"

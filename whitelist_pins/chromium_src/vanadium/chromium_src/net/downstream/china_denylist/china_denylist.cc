@@ -6,6 +6,7 @@
 
 #include <cstring>
 
+#include "vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.h"
 #include "vanadium/chromium_src/net/downstream/china_denylist/china_denylist_data.inc"
 
 namespace vanadium {
@@ -33,6 +34,9 @@ bool MatchesDeniedSpki(const std::vector<net::SHA256HashValue>& public_key_hashe
 
 bool CheckChinaRelatedCaDenylist(
     const std::vector<net::SHA256HashValue>& public_key_hashes) {
+  if (!cert_policy_flags::GetFlags().denylist_enabled) {
+    return true;
+  }
   if (MatchesDeniedSpki(public_key_hashes, data::china::kEnabled,
                         data::china::kSpkiCount, data::china::kDeniedSpkis) ||
       MatchesDeniedSpki(public_key_hashes, data::malaysia::kEnabled,

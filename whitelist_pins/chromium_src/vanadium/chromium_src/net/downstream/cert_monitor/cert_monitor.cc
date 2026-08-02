@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "vanadium/chromium_src/net/downstream/cert_monitor/cert_monitor_data.inc"
+#include "vanadium/chromium_src/net/downstream/cert_policy_flags/cert_policy_flags.h"
 
 namespace vanadium {
 namespace cert_monitor {
@@ -44,6 +45,10 @@ bool CheckCertBaseline(
     std::string_view host,
     const std::vector<net::SHA256HashValue>& public_key_hashes) {
   if (!data::kEnabled) {
+    return true;
+  }
+  const cert_policy_flags::Flags runtime = cert_policy_flags::GetFlags();
+  if (!runtime.cert_monitor_enabled) {
     return true;
   }
   if (public_key_hashes.empty()) {
@@ -101,7 +106,7 @@ bool CheckCertBaseline(
     return true;
   }
 
-  if (data::kBlockOnChange) {
+  if (runtime.cert_monitor_block_on_change) {
     LOG(ERROR) << "vanadium cert_monitor: blocking TLS for " << normalized
                << " due to certificate baseline mismatch";
     return false;
