@@ -22,3 +22,31 @@ DigiCert TLS CN intermediates): patches `0290`–`0294`, data in [`denylist/`](d
 [`cert_monitor/`](cert_monitor/) — first visit learns leaf + intermediate SPKI; later
 CA/leaf swaps LOG a warning and reject TLS. Chromium built-in CT stays on; crt.sh-style
 historical CT scans are in the desktop `pin-browser` prototype.
+
+### Browser **and** WebView (already shared)
+
+Vanadium uses **Trichrome**: browser (`app.vanadium.browser`) and WebView
+(`app.vanadium.webview`) load the same native library
+(`app.vanadium.trichromelibrary`). All of the above hooks live in
+`net/socket/ssl_client_socket_impl.cc`, so they apply to **both** products —
+there is no separate WebView port.
+
+Build / install both APKs (official GrapheneOS targets):
+
+```bash
+chrt -b 0 autoninja -C out/Default \
+  trichrome_webview_64_32_apk trichrome_chrome_64_32_apk \
+  trichrome_library_64_32_apk vanadium_config_apk
+```
+
+Then install library + WebView + browser (order matters; see GrapheneOS build docs).
+Set the device WebView provider to Vanadium WebView if you want other apps to use it.
+
+**WebView caveats**
+
+| Topic | Behaviour |
+|-------|-----------|
+| Denylist / whitelist pins / cert baseline block | Same as browser (shared `net/`) |
+| Cert baseline storage | **Per WebView process** (each host app’s renderer process) |
+| “Alert” UX | `LOG` only — host apps do not get a Vanadium popup |
+| crt.sh CT scan | Not in native WebView (pin-browser only) |

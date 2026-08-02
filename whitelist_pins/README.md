@@ -21,6 +21,9 @@ For each host in `policy.json`:
 
 This hooks `net/socket/ssl_client_socket_impl.cc` (same place Chromium runs HPKP/static PKP checks).
 
+**WebView:** Trichrome shares that `net/` code with `trichrome_webview_*`.
+Building/installing Vanadium WebView is enough — no duplicate patch for WebView.
+
 ## Build (official Vanadium flow)
 
 Follow https://grapheneos.org/build#browser-and-webview with this fork/branch instead of upstream Vanadium:

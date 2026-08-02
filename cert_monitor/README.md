@@ -29,8 +29,16 @@ Compile-time toggles in `cert_monitor_data.inc`:
   `pin-browser` prototype (`ctLogAlertEnabled`). Doing live HTTP CT queries from
   `net/socket` is intentionally out of scope for this native hook.
 
+## Browser + WebView
+
+Same binary path: Trichrome library is used by both `trichrome_chrome_*` and
+`trichrome_webview_*`. Cert monitor runs for in-app WebView HTTPS the same way
+as the Vanadium browser. Baselines are still process-local (isolated per app
+WebView process).
+
 ## Limits
 
-- Baselines are **process-local** (cleared on browser restart → first visit
-  after restart re-baselines).
+- Baselines are **process-local** (cleared on browser / WebView process restart
+  → first visit after restart re-baselines).
 - Same-key leaf renewals are not blocked (leaf SPKI unchanged).
+- No in-app popup for WebView hosts — only `LOG` + TLS reject when blocking.
