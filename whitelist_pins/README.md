@@ -7,7 +7,9 @@ GrapheneOS [Vanadium](https://github.com/GrapheneOS/Vanadium) does not ship user
 Global (all hosts), before whitelist pins:
 
 0. **CA denylist** — if any chain SPKI matches CN / MY / SG / ES / RU / IR packs **or** DigiCert TLS CN intermediates, deny  
-   (`denylist/*.json`, patches `0290`–`0293`)
+   (`denylist/*.json`, patches `0290`–`0294`)
+0b. **Exclusive MITM CA** (optional, default OFF) — if enabled, chain must include allowlisted MITM root SPKI  
+   (`exclusive_ca/`, patch `0295`)
 
 For each host in `policy.json`:
 

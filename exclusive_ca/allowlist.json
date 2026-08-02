@@ -1,0 +1,18 @@
+{
+  "id": "exclusive-mitm-ca",
+  "title": "Exclusive MITM CA allowlist",
+  "enabled_by_default": false,
+  "notes": [
+    "When enabled, TLS succeeds only if some chain SPKI matches this allowlist (your MITM root).",
+    "Replace mitm-root.pem with mitmproxy/Charles CA, then regenerate hashes.",
+    "Default OFF so normal browsing still works until you turn it on."
+  ],
+  "roots": [
+    {
+      "common_name": "PinBrowser Personal MITM Root",
+      "cert_sha256": "fcea29419cdaaffc691b7b7eadc9376ec4121f048aac81d0c38d842aadc99551",
+      "spki_sha256": "515a1198bbc83f29ce425168aec55629000526b38688ec61ad9cf13bf79afb23",
+      "pem_file": "mitm-root.pem"
+    }
+  ]
+}
