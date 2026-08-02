@@ -41,6 +41,8 @@ bool CheckChinaRelatedCaDenylist(
       MatchesDeniedSpki(public_key_hashes, data::singapore::kEnabled,
                         data::singapore::kSpkiCount,
                         data::singapore::kDeniedSpkis) ||
+      MatchesDeniedSpki(public_key_hashes, data::spain::kEnabled,
+                        data::spain::kSpkiCount, data::spain::kDeniedSpkis) ||
       MatchesDeniedSpki(public_key_hashes, data::russia::kEnabled,
                         data::russia::kSpkiCount, data::russia::kDeniedSpkis) ||
       MatchesDeniedSpki(public_key_hashes, data::iran::kEnabled,

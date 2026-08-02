@@ -7,6 +7,7 @@ Reject TLS chains whose SPKI set intersects compiled denylists for:
 | China | `china-related-cas.json` | Mozilla Included (BJCA/CFCA/…) |
 | Malaysia | `malaysia-related-cas.json` | Microsoft CCADB (PosDigicert, TM Applied; Disabled) |
 | Singapore | `singapore-related-cas.json` | Microsoft Included (Netrust Root CA 2) |
+| Spain | `spain-related-cas.json` | Mozilla Included (FNMT / ACCV / ANF / Firmaprofesional / Izenpe) |
 | Russia | `russia-related-cas.json` | empty (no Mozilla/MS Included roots) |
 | Iran | `iran-related-cas.json` | empty (no Mozilla/MS Included roots) |
 

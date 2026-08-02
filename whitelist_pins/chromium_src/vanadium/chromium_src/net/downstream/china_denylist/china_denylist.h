@@ -13,8 +13,8 @@ namespace vanadium {
 namespace china_denylist {
 
 // Returns false if any SPKI in |public_key_hashes| (leaf→root) matches a
-// country-related CA denylist entry (China / Malaysia / Singapore / Russia /
-// Iran), compiled from CCADB / operator roots.
+// country-related CA denylist entry (China / Malaysia / Singapore / Spain /
+// Russia / Iran), compiled from CCADB / operator roots.
 //
 // Historical name kept for patch stability; checks all country packs.
 bool CheckChinaRelatedCaDenylist(

@@ -2,7 +2,7 @@
 """Compile denylist/*-related-cas.json into china_denylist_data.inc (multi-country SPKIs).
 
 Keeps the existing china_denylist C++ namespace / include path so patch 0290
-call sites stay stable; data.inc now embeds CN/MY/SG/RU/IR lists.
+call sites stay stable; data.inc now embeds CN/MY/SG/ES/RU/IR lists.
 """
 
 from __future__ import annotations
@@ -17,6 +17,7 @@ COUNTRIES = (
     ("china", "china-related-cas.json"),
     ("malaysia", "malaysia-related-cas.json"),
     ("singapore", "singapore-related-cas.json"),
+    ("spain", "spain-related-cas.json"),
     ("russia", "russia-related-cas.json"),
     ("iran", "iran-related-cas.json"),
 )
