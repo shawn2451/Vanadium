@@ -24,6 +24,9 @@ This hooks `net/socket/ssl_client_socket_impl.cc` (same place Chromium runs HPKP
 **WebView:** Trichrome shares that `net/` code with `trichrome_webview_*`.
 Building/installing Vanadium WebView is enough — no duplicate patch for WebView.
 
+**Realtime:** patch `0296` sets SSL session cache size to 0 so policy checks are
+not skipped via TLS session tickets (see `realtime_tls/README.md`).
+
 ## Build (official Vanadium flow)
 
 Follow https://grapheneos.org/build#browser-and-webview with this fork/branch instead of upstream Vanadium:

@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Shawn Zhang <shawn.zhang@pepperstone.com>
+Date: Sun, 2 Aug 2026 14:40:00 +0000
+Subject: [PATCH] Disable SSL session cache for realtime cert policy
+
+Vanadium denylist / whitelist pins / cert_monitor run in
+ssl_client_socket_impl after certificate verification. Chromium already
+sets SSL_CTX_set_reverify_on_resume(1), so resumed sessions re-verify.
+Still disable SSLClientSessionCache entirely so every new socket does a
+full handshake path and cannot reuse a cached TLS session ticket.
+
+HTTP disk cache is a separate concern (no network ⇒ no TLS). Prefer
+disabling HTTP cache at the browser layer or hard-refresh when testing
+policy changes.
+
+diff --git a/net/http/http_network_session.cc b/net/http/http_network_session.cc
+index 1111111111111..2222222222222 100644
+--- a/net/http/http_network_session.cc
++++ b/net/http/http_network_session.cc
+@@ -147,7 +147,14 @@
+       proxy_resolution_service_(context.proxy_resolution_service),
+       ssl_config_service_(context.ssl_config_service),
+       http_auth_cache_(
+           params.key_auth_cache_server_entries_by_network_anonymization_key),
+-      ssl_client_session_cache_(SSLClientSessionCache::Config()),
++      ssl_client_session_cache_([] {
++        SSLClientSessionCache::Config config;
++        // Vanadium: no TLS session tickets/cache. Forces a handshake (and
++        // therefore cert verify + downstream policy checks) on each new
++        // socket instead of resuming a prior session.
++        config.max_entries = 0;
++        return config;
++      }()),
+       ssl_client_context_(context.ssl_config_service,
+                           context.cert_verifier,
+                           context.transport_security_state,
+                           &ssl_client_session_cache_,
+                           context.sct_auditing_delegate),

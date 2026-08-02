@@ -50,3 +50,8 @@ Set the device WebView provider to Vanadium WebView if you want other apps to us
 | Cert baseline storage | **Per WebView process** (each host app’s renderer process) |
 | “Alert” UX | `LOG` only — host apps do not get a Vanadium popup |
 | crt.sh CT scan | Not in native WebView (pin-browser only) |
+
+**Realtime TLS policy:** patch `0296` disables the SSL session cache so each new
+socket handshakes and re-runs denylist / pins / cert_monitor (see
+[`realtime_tls/`](realtime_tls/)). HTTP disk cache can still serve a page without
+network — hard-refresh when testing.
