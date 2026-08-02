@@ -18,6 +18,7 @@ See [`whitelist_pins/README.md`](whitelist_pins/README.md) and patch `patches/02
 Also includes a **CA denylist** (China / Malaysia / Singapore / Spain / Russia / Iran +
 DigiCert TLS CN intermediates): patches `0290`–`0294`, data in [`denylist/`](denylist/).
 
-Optional **exclusive MITM CA** mode (compile-time toggle, default OFF): patch `0295`,
-[`exclusive_ca/`](exclusive_ca/) — when enabled, only chains containing your allowlisted
-MITM root are accepted.
+**Cert baseline monitor** (alert + block, default ON): patch `0295`,
+[`cert_monitor/`](cert_monitor/) — first visit learns leaf + intermediate SPKI; later
+CA/leaf swaps LOG a warning and reject TLS. Chromium built-in CT stays on; crt.sh-style
+historical CT scans are in the desktop `pin-browser` prototype.
