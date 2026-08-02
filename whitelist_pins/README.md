@@ -6,8 +6,8 @@ GrapheneOS [Vanadium](https://github.com/GrapheneOS/Vanadium) does not ship user
 
 Global (all hosts), before whitelist pins:
 
-0. **China-related CA denylist** — if any chain SPKI matches Mozilla-scanned China-related roots, deny  
-   (`denylist/china-related-cas.json`, patch `0290`)
+0. **Country CA denylist** — if any chain SPKI matches CN / MY / SG / RU / IR packs, deny  
+   (`denylist/*-related-cas.json`, patches `0290` + `0291`)
 
 For each host in `policy.json`:
 

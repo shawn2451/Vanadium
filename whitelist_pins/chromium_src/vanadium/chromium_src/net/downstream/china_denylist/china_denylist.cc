@@ -10,18 +10,42 @@
 
 namespace vanadium {
 namespace china_denylist {
+namespace {
+
+bool MatchesDeniedSpki(const std::vector<net::SHA256HashValue>& public_key_hashes,
+                       bool enabled,
+                       size_t count,
+                       const uint8_t (*denied)[32]) {
+  if (!enabled || count == 0) {
+    return false;
+  }
+  for (const net::SHA256HashValue& hash : public_key_hashes) {
+    for (size_t i = 0; i < count; ++i) {
+      if (std::memcmp(hash.data(), denied[i], 32) == 0) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+}  // namespace
 
 bool CheckChinaRelatedCaDenylist(
     const std::vector<net::SHA256HashValue>& public_key_hashes) {
-  if (!data::kEnabled) {
-    return true;
-  }
-  for (const net::SHA256HashValue& hash : public_key_hashes) {
-    for (size_t i = 0; i < data::kSpkiCount; ++i) {
-      if (std::memcmp(hash.data(), data::kDeniedSpkis[i], 32) == 0) {
-        return false;
-      }
-    }
+  if (MatchesDeniedSpki(public_key_hashes, data::china::kEnabled,
+                        data::china::kSpkiCount, data::china::kDeniedSpkis) ||
+      MatchesDeniedSpki(public_key_hashes, data::malaysia::kEnabled,
+                        data::malaysia::kSpkiCount,
+                        data::malaysia::kDeniedSpkis) ||
+      MatchesDeniedSpki(public_key_hashes, data::singapore::kEnabled,
+                        data::singapore::kSpkiCount,
+                        data::singapore::kDeniedSpkis) ||
+      MatchesDeniedSpki(public_key_hashes, data::russia::kEnabled,
+                        data::russia::kSpkiCount, data::russia::kDeniedSpkis) ||
+      MatchesDeniedSpki(public_key_hashes, data::iran::kEnabled,
+                        data::iran::kSpkiCount, data::iran::kDeniedSpkis)) {
+    return false;
   }
   return true;
 }

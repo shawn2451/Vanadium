@@ -13,7 +13,10 @@ namespace vanadium {
 namespace china_denylist {
 
 // Returns false if any SPKI in |public_key_hashes| (leaf→root) matches a
-// China-related CA from the compiled Mozilla CCADB denylist.
+// country-related CA denylist entry (China / Malaysia / Singapore / Russia /
+// Iran), compiled from CCADB / operator roots.
+//
+// Historical name kept for patch stability; checks all country packs.
 bool CheckChinaRelatedCaDenylist(
     const std::vector<net::SHA256HashValue>& public_key_hashes);
 

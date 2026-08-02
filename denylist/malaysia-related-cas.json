@@ -1,0 +1,41 @@
+{
+  "id": "malaysia-related-cas",
+  "title": "Malaysia-related CAs (Microsoft Trusted Root history + licensed CAs)",
+  "generated_at": "2026-08-02T05:55:00.000Z",
+  "source": "https://ccadb.my.salesforce-sites.com/microsoft/IncludedCACertificateReportForMSFT",
+  "selection_rule": "CA Owner / Common Name linked to Malaysia (Pos Digicert, TMCA)",
+  "notes": [
+    "Mozilla Included list currently has no Malaysia Geographic Focus roots.",
+    "PosDigicert Class 2 Root CA G2 and TM Applied Business Root are present in Microsoft CCADB as Disabled (still useful for denylist matching if installed or cross-signed).",
+    "Match any chain cert SHA-256 or SPKI SHA-256 against this list to deny."
+  ],
+  "enabled_by_default": true,
+  "match": [
+    "cert_sha256",
+    "spki_sha256"
+  ],
+  "roots": [
+    {
+      "common_name": "PosDigicert Class 2 Root CA G2",
+      "owner": "Pos Digicert Sdn. Bhd (Malaysia)",
+      "organization": "Digicert Sdn. Bhd.",
+      "geographic_focus": "Malaysia",
+      "microsoft_status": "Disabled",
+      "trust_bits": "Server Authentication; Client Authentication; Document Signing; Time Stamping",
+      "cert_sha256": "19abcdff3a74402fa8f0ca206bf7fab0dffff3ae2bbd719584d21090a4353207",
+      "spki_sha256": "67a84264d42e204a9a5b0a3667b951db22c505df95ed983b5e8c4d1fce77af43",
+      "company_website": "https://www.posdigicert.com.my/"
+    },
+    {
+      "common_name": "TM Applied Business Root Certificate",
+      "owner": "Telekom Applied Business Malaysia (TMCA)",
+      "organization": "TM",
+      "geographic_focus": "Malaysia",
+      "microsoft_status": "Disabled",
+      "trust_bits": "Server Authentication; Client Authentication; Secure Email; Time Stamping",
+      "cert_sha256": "a9c77af1bcdfaa3739442b0b2734c68eaf2e9833f0d766fbcaa6f2aeb42dec02",
+      "spki_sha256": "111c24a243061da76e57e3b1243eda90879ffb750552395443fa8c34dc0ed737",
+      "company_website": "https://www.tmca.com.my/"
+    }
+  ]
+}

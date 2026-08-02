@@ -1,0 +1,18 @@
+{
+  "id": "iran-related-cas",
+  "title": "Iran-related CAs (public trust store scan)",
+  "generated_at": "2026-08-02T05:55:00.000Z",
+  "source": "https://ccadb.my.salesforce-sites.com/mozilla/IncludedCACertificateReportPEMCSV + Microsoft IncludedCACertificateReportForMSFT",
+  "selection_rule": "Geographic Focus / owner keywords for Iran",
+  "notes": [
+    "No Iran-related roots currently appear in Mozilla Included or Microsoft Trusted Root Included lists.",
+    "Add cert_sha256/spki_sha256 here if a national or operator root is observed on a TLS chain.",
+    "Toggle remains available; list is empty until roots are curated."
+  ],
+  "enabled_by_default": true,
+  "match": [
+    "cert_sha256",
+    "spki_sha256"
+  ],
+  "roots": []
+}

@@ -1,0 +1,30 @@
+{
+  "id": "singapore-related-cas",
+  "title": "Singapore-related CAs (Microsoft Trusted Root + operator roots)",
+  "generated_at": "2026-08-02T05:55:00.000Z",
+  "source": "https://ccadb.my.salesforce-sites.com/microsoft/IncludedCACertificateReportForMSFT",
+  "selection_rule": "CA Owner / Common Name linked to Singapore (Netrust); Geographic Focus Singapore",
+  "notes": [
+    "Mozilla Included list currently has no Singapore Geographic Focus roots.",
+    "Netrust Root CA 2 is Included in Microsoft Trusted Root Program (C=SG).",
+    "Match any chain cert SHA-256 or SPKI SHA-256 against this list to deny."
+  ],
+  "enabled_by_default": true,
+  "match": [
+    "cert_sha256",
+    "spki_sha256"
+  ],
+  "roots": [
+    {
+      "common_name": "Netrust Root CA 2",
+      "owner": "Netrust Pte Ltd",
+      "organization": "Netrust Pte Ltd",
+      "geographic_focus": "Singapore",
+      "microsoft_status": "Included",
+      "trust_bits": "Server Authentication; Client Authentication; Secure Email; Time Stamping",
+      "cert_sha256": "65353833cf234c79562164f90849c0d104dbabf8ee41064d83e8cbe03ba1c5a5",
+      "spki_sha256": "3ee6b341402851b27e64021a3023aac7c1a0d2def27d5bce5c2dbeb0b22dcc71",
+      "company_website": "https://www.netrust.net/"
+    }
+  ]
+}
